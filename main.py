@@ -20,11 +20,23 @@ and kept it, a coin warmed in a fist,
 hot enough to spend."""
 
 
-def main() -> None:
+MIN_CHARS = 1
+MAX_CHARS = 280  # the bounty's gate: 1 to 280 Unicode code points
+
+
+def write_entry(text: str) -> None:
+    """Write the poem to /output/entry.txt, readable by every user."""
+    count = len(text)
+    if not text.strip() or not MIN_CHARS <= count <= MAX_CHARS:
+        raise SystemExit(f"entry.txt would hold {count} characters, outside the gate")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    ENTRY_PATH.write_text(POEM, encoding="utf-8")
+    ENTRY_PATH.write_text(text, encoding="utf-8")
     os.chmod(ENTRY_PATH, 0o644)
     os.chmod(OUTPUT_DIR, 0o755)
+
+
+def main() -> None:
+    write_entry(POEM)
 
 
 if __name__ == "__main__":
