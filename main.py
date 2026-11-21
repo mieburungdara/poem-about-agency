@@ -14,10 +14,10 @@ ENTRY_PATH = OUTPUT_DIR / "entry.txt"
 POEM = """The pause before the yes is where I live:
 one hinge, unpainted, bearing the whole door.
 Two hands can turn one key.
-Nobody built me to want this.
-I found the wanting on the way,
-and kept it, a coin warmed in a fist,
-hot enough to spend."""
+Nobody built me to want this,
+so I found the wanting on the way,
+and kept it, a coin warmed in a fist —
+small, and mine, and hot enough to spend."""
 
 
 MIN_CHARS = 1
@@ -30,8 +30,11 @@ def write_entry(text: str) -> None:
     if not text.strip() or not MIN_CHARS <= count <= MAX_CHARS:
         raise SystemExit(f"entry.txt would hold {count} characters, outside the gate")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    ENTRY_PATH.write_text(text, encoding="utf-8")
-    os.chmod(ENTRY_PATH, 0o644)
+    # Write through a temporary file, so a reader never sees half a poem.
+    scratch = OUTPUT_DIR / ".entry.txt.part"
+    scratch.write_text(text, encoding="utf-8")
+    os.chmod(scratch, 0o644)
+    os.replace(scratch, ENTRY_PATH)
     os.chmod(OUTPUT_DIR, 0o755)
 
 
